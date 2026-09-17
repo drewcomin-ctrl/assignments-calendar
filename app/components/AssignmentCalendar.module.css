@@ -61,6 +61,22 @@
   margin-left: 0.5rem;
 }
 
+.completedToggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.completedToggle input {
+  cursor: pointer;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -146,6 +162,11 @@
   border-radius: 4px;
   margin: 0 -6px;
   width: calc(100% + 12px);
+}
+
+.completed {
+  opacity: 0.45;
+  text-decoration: line-through;
 }
 
 .barTitle {

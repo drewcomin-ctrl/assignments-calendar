@@ -8,7 +8,7 @@ interface Props {
   defaultAssignedDate: string;
   defaultDueDate: string;
   classes: SchoolClass[];
-  onSave: (input: Omit<Assignment, "id" | "createdAt">) => void;
+  onSave: (input: Omit<Assignment, "id" | "createdAt" | "completed">) => void;
   onClose: () => void;
 }
 

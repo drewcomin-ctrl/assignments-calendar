@@ -18,6 +18,7 @@ export default function AssignmentCalendar() {
     classes,
     addAssignment,
     deleteAssignment,
+    toggleComplete,
     addClass,
     deleteClass,
     setClassColor,
@@ -29,13 +30,19 @@ export default function AssignmentCalendar() {
   });
   const [formDate, setFormDate] = useState<string | null>(null);
   const [selected, setSelected] = useState<Assignment | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const cells = buildMonthCells(viewDate);
   const today = todayKey();
 
   const activeOn = (key: string): Assignment[] =>
     assignments
-      .filter((a) => key >= a.assignedDate && key <= a.dueDate)
+      .filter(
+        (a) =>
+          (showCompleted || !a.completed) &&
+          key >= a.assignedDate &&
+          key <= a.dueDate
+      )
       .sort((a, b) =>
         a.dueDate === b.dueDate
           ? a.title.localeCompare(b.title)
@@ -47,6 +54,10 @@ export default function AssignmentCalendar() {
     year: "numeric",
   });
   const isCurrentMonth = (d: Date) => d.getMonth() === viewDate.getMonth();
+
+  const selectedLive = selected
+    ? assignments.find((a) => a.id === selected.id) ?? null
+    : null;
 
   const shiftMonth = (delta: number) =>
     setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + delta, 1));
@@ -73,6 +84,14 @@ export default function AssignmentCalendar() {
               &rarr;
             </button>
             <span className={styles.monthLabel}>{monthLabel}</span>
+            <label className={styles.completedToggle}>
+              <input
+                type="checkbox"
+                checked={showCompleted}
+                onChange={(e) => setShowCompleted(e.target.checked)}
+              />
+              Show completed
+            </label>
           </div>
 
           <div className={styles.grid}>
@@ -112,6 +131,7 @@ export default function AssignmentCalendar() {
                             isStart ? styles.startBar : "",
                             isDue ? styles.dueBar : "",
                             isStart && isDue ? styles.singleBar : "",
+                            a.completed ? styles.completed : "",
                           ]
                             .filter(Boolean)
                             .join(" ")}
@@ -146,6 +166,13 @@ export default function AssignmentCalendar() {
             {assignments.length === 0
               ? "No assignments yet. Click a day to add your first one."
               : `${assignments.length} assignment${assignments.length === 1 ? "" : "s"} saved in your browser.`}
+            {assignments.some((a) => a.completed) && (
+              <>
+                {" "}
+                Completed:{" "}
+                {assignments.filter((a) => a.completed).length}.
+              </>
+            )}
           </p>
         </main>
 
@@ -167,14 +194,15 @@ export default function AssignmentCalendar() {
         />
       )}
 
-      {selected && (
+      {selectedLive && (
         <AssignmentDetails
-          assignment={selected}
-          color={colorForClass(selected.className)}
+          assignment={selectedLive}
+          color={colorForClass(selectedLive.className)}
           onDelete={(id) => {
             deleteAssignment(id);
             setSelected(null);
           }}
+          onToggleComplete={toggleComplete}
           onClose={() => setSelected(null)}
         />
       )}

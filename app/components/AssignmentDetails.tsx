@@ -7,6 +7,7 @@ interface Props {
   assignment: Assignment;
   color: string;
   onDelete: (id: string) => void;
+  onToggleComplete: (id: string) => void;
   onClose: () => void;
 }
 
@@ -17,7 +18,13 @@ const formatDate = (key: string): string =>
     day: "numeric",
   });
 
-export function AssignmentDetails({ assignment, color, onDelete, onClose }: Props) {
+export function AssignmentDetails({
+  assignment,
+  color,
+  onDelete,
+  onToggleComplete,
+  onClose,
+}: Props) {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div
@@ -64,6 +71,13 @@ export function AssignmentDetails({ assignment, color, onDelete, onClose }: Prop
         </div>
 
         <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.completeBtn}
+            onClick={() => onToggleComplete(assignment.id)}
+          >
+            {assignment.completed ? "Mark Not Complete" : "Mark Complete"}
+          </button>
           <button
             type="button"
             className={styles.deleteBtn}

@@ -62,6 +62,7 @@ const migrateAssignment = (a: Partial<Assignment>): Assignment => ({
   assignedDate: a.assignedDate ?? a.dueDate ?? todayStr(),
   dueDate: a.dueDate ?? todayStr(),
   description: a.description ?? "",
+  completed: a.completed === true,
   createdAt: a.createdAt ?? "",
 });
 
@@ -141,9 +142,12 @@ export function useCalendar() {
     () => DEFAULT_CLASSES
   );
 
-  const addAssignment = (input: Omit<Assignment, "id" | "createdAt">) => {
+  const addAssignment = (
+    input: Omit<Assignment, "id" | "createdAt" | "completed">
+  ) => {
     const assignment: Assignment = {
       ...input,
+      completed: false,
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
     };
@@ -153,6 +157,14 @@ export function useCalendar() {
   const deleteAssignment = (id: string) => {
     assignmentsStore.set(
       assignmentsStore.getSnapshot().filter((a) => a.id !== id)
+    );
+  };
+
+  const toggleComplete = (id: string) => {
+    assignmentsStore.set(
+      assignmentsStore
+        .getSnapshot()
+        .map((a) => (a.id === id ? { ...a, completed: !a.completed } : a))
     );
   };
 
@@ -186,6 +198,7 @@ export function useCalendar() {
     classes,
     addAssignment,
     deleteAssignment,
+    toggleComplete,
     addClass,
     deleteClass,
     setClassColor,
